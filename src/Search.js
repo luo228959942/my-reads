@@ -15,25 +15,32 @@ class Search extends React.Component {
 
         if (query) {
             BooksAPI.search(query).then((data) => {
-                // console.log(data)
-                // this.setState({showingBooks:data})
-                // list = data;
-                if(data.length){
+                let books = this.props.books;
+                data.map((item,index) => {
+                    books.map((book) => {
+                        if (book.id === item.id) {
+                            item.shelf=book.shelf;
+                            data[index]=item;
+                        }else {
+                            item.shelf="none";
+                            data[index]=item;
+                        }
+                    })
+
+                });
+                if (data.length) {
                     this.setState({showingBooks: data})
-                }else {
+                } else {
                     this.setState({showingBooks: []})
                 }
-
             })
         } else {
             this.setState({showingBooks: []})
         }
-
-        // this.setState({query:query.trim()})
     };
 
-
     render() {
+
         return (
             <div className="search-books">
                 <div className="search-books-bar">
@@ -45,11 +52,9 @@ class Search extends React.Component {
                 </div>
                 <div className="search-books-results">
                     <ol className="books-grid">
-
                         {this.state.showingBooks.map((book) => {
-                            return <Book key={book.id} book={book}/>
+                            return <Book key={book.id} changeBookShelf={this.props.changeBookShelf} book={book}/>
                         })}
-
                     </ol>
                 </div>
             </div>
