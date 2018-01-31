@@ -16,17 +16,9 @@ class Search extends React.Component {
         if (query) {
             BooksAPI.search(query).then((data) => {
                 let books = this.props.books;
-                data.map((item,index) => {
-                    books.map((book) => {
-                        if (book.id === item.id) {
-                            item.shelf=book.shelf;
-                            data[index]=item;
-                        }else {
-                            item.shelf="none";
-                            data[index]=item;
-                        }
-                    })
-
+                data.map((item) => {
+                    let foundOne = books.find(bookFromProps => bookFromProps.id === item.id);
+                    item.shelf = foundOne ? foundOne.shelf : 'none';
                 });
                 if (data.length) {
                     this.setState({showingBooks: data})
@@ -46,8 +38,11 @@ class Search extends React.Component {
                 <div className="search-books-bar">
                     <Link to='/' className="close-search"/>
                     <div className="search-books-input-wrapper">
-                        <input onChange={(event) => this.updateQuery(event.target.value)} type="text"
-                               placeholder="Search by title or author"/>
+                        <input onKeyPress={(event) => {
+                            if (event.key === 'Enter') {
+                                this.updateQuery(event.target.value)
+                            }
+                        }} type="text" placeholder="Search by title or author"/>
                     </div>
                 </div>
                 <div className="search-books-results">
